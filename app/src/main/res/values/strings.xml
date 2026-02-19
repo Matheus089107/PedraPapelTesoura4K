@@ -3,4 +3,5 @@
     <string name="Pedra">Pedra</string>
     <string name="Papel">Papel</string>
     <string name="Tesoura">Tesoura</string>
+    <string name="reinicializar">Restart</string>
 </resources>
