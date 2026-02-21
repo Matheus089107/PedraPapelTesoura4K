@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pedrapapeltesoura.ui.theme.PedraPapelTesouraTheme
@@ -27,40 +28,92 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PedraPapelTesoura4k(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .safeDrawingPadding()
-                    )
+                    // Chama o nosso gerenciador de telas ao invés do jogo direto
+                    AppEminemJokenpo()
                 }
             }
         }
     }
 }
 
+// --- GERENCIADOR DE TELAS ---
 @Composable
-fun PedraPapelTesoura4k(modifier: Modifier = Modifier) {
-    // ESTADOS: Variáveis que o Compose monitora para atualizar a tela
-    var podeClicar by remember { mutableStateOf(true) }
-    var result by remember { mutableStateOf(0) } // Escolha do Computador (Eminem)
-    var escolhaJogador by remember { mutableStateOf(0) } // Escolha do Usuário
-    var contador by remember { mutableStateOf(0) } // Timer 1, 2, 3
+fun AppEminemJokenpo() {
+    // Controla qual tela estamos vendo no momento
+    var telaAtual by remember { mutableStateOf("inicio") }
 
-    // Lógica do Timer (Iniciado quando contador muda para 1)
+    when (telaAtual) {
+        "inicio" -> TelaInicial(aoIniciarJogo = { telaAtual = "jogo" })
+        "jogo" -> PedraPapelTesoura4k(
+            modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+            aoVoltarMenu = { telaAtual = "inicio" }
+        )
+    }
+}
+
+// --- TELA INICIAL ---
+@Composable
+fun TelaInicial(aoIniciarJogo: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Rap Battle:",
+            fontSize = 24.sp,
+            color = Color.Gray
+        )
+        Text(
+            text = "JOKENPÔ vs EMINEM",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.de_costas),
+            contentDescription = "Eminem de Costas",
+            modifier = Modifier.size(300.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = aoIniciarJogo,
+            modifier = Modifier
+                .padding(16.dp)
+                .height(60.dp)
+                .fillMaxWidth(0.7f)
+        ) {
+            Text(text = "DESAFIAR EMINEM", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+// --- TELA DO JOGO (Sua base, levemente adaptada) ---
+@Composable
+fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit) {
+    var podeClicar by remember { mutableStateOf(true) }
+    var result by remember { mutableStateOf(0) }
+    var escolhaJogador by remember { mutableStateOf(0) }
+    var contador by remember { mutableStateOf(0) }
+
     LaunchedEffect(contador) {
         if (contador in 1..3) {
             delay(1000)
             if (contador < 3) {
                 contador += 1
             } else {
-                // O sorteio só acontece DEPOIS que o timer chega no 3
                 result = (1..3).random()
                 contador = 0
             }
         }
     }
 
-    // Define qual imagem mostrar baseada no resultado do sorteio
     val imagemResult = when (result) {
         1 -> R.drawable.pedra
         2 -> R.drawable.papel
@@ -73,7 +126,6 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Exibição do Timer
         if (contador > 0) {
             Text(
                 text = contador.toString(),
@@ -82,47 +134,44 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.headlineLarge
             )
         } else {
-            // Espaço vazio para manter o layout estável quando o timer some
             Spacer(modifier = Modifier.height(96.dp))
         }
 
         Image(
             painter = painterResource(imagemResult),
             contentDescription = "Jogada do Eminem",
-            modifier = Modifier.size(400.dp),
+            modifier = Modifier.size(350.dp), // Diminuí levemente para caber o novo botão
             contentScale = ContentScale.FillBounds
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botões de Jogada
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             val iniciarProcesso = { escolha: Int ->
                 escolhaJogador = escolha
-                result = 0 // Reseta a imagem para "de costas"
+                result = 0
                 podeClicar = false
-                contador = 1 // Inicia o timer
+                contador = 1
             }
 
             Button(onClick = { iniciarProcesso(1) }, enabled = podeClicar) {
-                Text(text = stringResource(R.string.Pedra), fontSize = 20.sp)
+                Text(text = stringResource(R.string.Pedra), fontSize = 18.sp)
             }
             Button(onClick = { iniciarProcesso(2) }, enabled = podeClicar) {
-                Text(text = stringResource(R.string.Papel), fontSize = 20.sp)
+                Text(text = stringResource(R.string.Papel), fontSize = 18.sp)
             }
             Button(onClick = { iniciarProcesso(3) }, enabled = podeClicar) {
-                Text(text = stringResource(R.string.Tesoura), fontSize = 20.sp)
+                Text(text = stringResource(R.string.Tesoura), fontSize = 18.sp)
             }
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // Exibição do Resultado (Vitória/Derrota)
         if (contador == 0 && result != 0) {
             val mensagem = when {
                 escolhaJogador == result -> "!Empate!"
-                (escolhaJogador == 1 && result == 3) || // Pedra vence Tesoura
-                        (escolhaJogador == 2 && result == 1) || // Papel vence Pedra
+                (escolhaJogador == 1 && result == 3) ||
+                        (escolhaJogador == 2 && result == 1) ||
                         (escolhaJogador == 3 && result == 2) -> "Você Ganhou!!!!"
                 else -> "!!Você Perdeu!!"
             }
@@ -130,23 +179,36 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier) {
             Text(
                 text = mensagem,
                 fontSize = 32.sp,
-                color = if (mensagem.contains("Ganhou")) Color.Green
+                fontWeight = FontWeight.Bold,
+                color = if (mensagem.contains("Ganhou")) Color(0xFF4CAF50) // Verde mais agradável
                 else if (mensagem.contains("Empate")) Color(0xFFDAA520) else Color.Red
             )
+        } else {
+            // Mantém o layout estável enquanto o resultado não sai
+            Spacer(modifier = Modifier.height(38.dp))
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botão Reiniciar
-        Button(
-            onClick = {
-                result = 0
-                escolhaJogador = 0
-                podeClicar = true
-            },
-            enabled = !podeClicar && contador == 0
-        ) {
-            Text(text = stringResource(R.string.reinicializar), fontSize = 22.sp)
+        // Adicionamos os botões em linha quando o jogo acaba
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Button(
+                onClick = {
+                    result = 0
+                    escolhaJogador = 0
+                    podeClicar = true
+                },
+                enabled = !podeClicar && contador == 0
+            ) {
+                Text(text = stringResource(R.string.reinicializar), fontSize = 18.sp)
+            }
+
+            // Botão para voltar ao Menu Inicial
+            if (!podeClicar && contador == 0) {
+                OutlinedButton(onClick = aoVoltarMenu) {
+                    Text(text = "Sair", fontSize = 18.sp)
+                }
+            }
         }
     }
 }
