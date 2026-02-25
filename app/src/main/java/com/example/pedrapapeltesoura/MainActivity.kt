@@ -96,7 +96,6 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit)
     var escolhaJogador by remember { mutableStateOf(0) }
     var contador by remember { mutableStateOf(0) }
 
-    // Lógica do Contador e do Som
     LaunchedEffect(contador) {
         if (contador in 1..3) {
             delay(1000)
@@ -105,11 +104,18 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit)
             } else {
                 try {
                     val mp = MediaPlayer.create(context, R.raw.rizz)
-                    mp.setVolume(1.0f, 1.0f)
-                    mp.setOnCompletionListener { it.release() }
-                    mp.start()
+                    if (mp != null) {
+                        mp.setVolume(5.0f, 5.0f)
+                        mp.setOnCompletionListener {
+                            it.stop()
+                            it.release()
+                        }
+                        mp.start()
+                    } else {
+                        Log.e("ErroSom", "MediaPlayer retornou null. O arquivo R.raw.rizz existe?")
+                    }
                 } catch (e: Exception) {
-                    Log.e("SomErro", "Não deu pra tocar o rizz: ${e.message}")
+                    Log.e("ErroSom", "Erro ao inicializar som: ${e.message}")
                 }
 
                 result = (1..3).random()
