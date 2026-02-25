@@ -98,7 +98,7 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit)
 
     LaunchedEffect(contador) {
         if (contador in 1..3) {
-            delay(1000)
+            delay(750)
             if (contador < 3) {
                 contador += 1
             } else {
@@ -178,7 +178,7 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Resultado do Texto
+        // RESULTADO
         if (contador == 0 && result != 0) {
             val mensagem = when {
                 escolhaJogador == result -> "Empate!"
@@ -202,7 +202,7 @@ fun PedraPapelTesoura4k(modifier: Modifier = Modifier, aoVoltarMenu: () -> Unit)
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Opções de Reiniciar ou Sair
+        // REINICIAR/SAIR
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(
                 onClick = {
