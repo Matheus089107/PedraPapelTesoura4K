@@ -60,7 +60,7 @@ fun TelaInicial(aoIniciarJogo: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Rap Battle:", fontSize = 24.sp, color = Color.Gray)
+        Text(text = "Epic Rap Battle of History:", fontSize = 22.sp, color = Color.Gray)
         Text(
             text = "JOKENPÔ vs EMINEM",
             fontSize = 32.sp,
@@ -70,9 +70,8 @@ fun TelaInicial(aoIniciarJogo: () -> Unit) {
 
         Image(
             painter = painterResource(id = R.drawable.eminem3),
-            contentDescription = "Eminem de Costas",
-            modifier = Modifier.size(450.dp),
-            contentScale = ContentScale.Fit
+            contentDescription = "Eminem com pedra,papel e tesoura",
+            modifier = Modifier.size(450.dp)
         )
 
         Button(
